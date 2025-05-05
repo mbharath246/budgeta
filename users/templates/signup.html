@@ -1,0 +1,28 @@
+{% extends 'base.html'%}
+{% load static %}
+{% block content %}
+
+<head>
+    <title>SignUp</title>
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+</head>
+<body>
+    <main>
+        <div class="img"></div>
+        <form method="post" id="register" action="{% url 'login' %}">
+            {% csrf_token %}
+            <h1>Register</h1>
+            <input type="text" name="name" placeholder="Enter Your Name..." id="uname" required>
+            <input type="email" name="email" placeholder="Enter Your email..." id="uname" >
+            <input type="password" name="password" id="pwd" placeholder="Enter your password..." >
+            <input type="text" name="phone" placeholder="Enter Your Number..." id="uname" required>
+            <br><br>
+            <span class="error"></span>
+            <span class="success"></span>
+            <input type="submit" value="Register">
+            <p>Already have an account? <a href="/users/login">&nbsp; Login</a></p>
+        </form>
+    </main>
+
+</body>
+{% endblock %}

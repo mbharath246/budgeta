@@ -1,0 +1,130 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: sans-serif;
+}
+main{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+main .img{
+    background-image: url(/static/images/background.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    filter: blur(4px);  
+    height: 100%;
+    width: 100%;
+}
+
+form{
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    padding: 30px 10px;
+    width: 400px;
+    height: auto;
+    justify-content: center;
+    align-items: center;
+    border-radius: 20px;
+    color: white;   
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+    filter: blur(0px);
+}
+
+form label{
+    font-size: 20px;
+}
+
+form #uname, form #pwd{
+    padding: 10px;
+    width: 300px;
+    height: 30px;
+    margin: 10px;
+    border: none;
+    outline: none;
+    background-color: transparent;
+    border-bottom: 1.2px solid;
+    color: white;
+}
+
+form h1{
+    margin-block: 30px;
+}
+
+form .text{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 3px;
+    margin-block: 20px;
+    width: 300px;
+}
+
+form .text label{
+    font-size: 14px;
+}
+
+a{
+    color: inherit;
+    /* padding-left: 60px; */
+    font-size: 12px;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+form input[type='submit']{
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: none;
+    background-color: hsl(169, 82%, 17%);
+    cursor: pointer;
+    width: 300px;
+    font-size: 20px;
+    margin-bottom: 20px;
+    color: #fff;
+}
+form input[type='submit']:hover{
+    background-color: hsl(169, 82%, 14%);
+    
+}
+
+form p{
+    font-size: 14px;
+}
+
+span.error {
+    font-size: 14px;
+    color: red;
+    padding-bottom: 16px;
+    text-align: center;
+    width: 300px;
+}
+span.success {
+    font-size: 14px;
+    color: green;
+    padding-bottom: 16px;
+    text-align: center;
+    width: 300px;
+}
+
+
+@media (max-width:420px){
+    body form{
+        max-width: 300px;
+        font-size: 14px;
+    }   
+       form .text{
+           padding-inline: 20px;
+       }
+       form input[type='submit']{
+           width: 100px;
+       }
+       form #uname, form #pwd{
+           width: 250px;
+       }
+   }
