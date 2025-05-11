@@ -1,0 +1,49 @@
+{% extends "users/base.html" %}
+{% block content %}
+{% load static %}
+
+<head>
+    <title>Login</title>
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+</head>
+
+<main>
+    <div class="img"></div>
+    <form action="{% url 'login' %}" method="post" id="login">
+        <h1>Login</h1>
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+            <div class="error">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+        <!-- Email field -->
+        <div class="field">
+            {% if form.email.errors %}
+                    <div class="error">{{ form.email.errors }}</div>
+                {% endif %}
+            <input type="email" name="username" placeholder="Enter Your Username..." id="uname" required>
+        </div>
+
+        <!-- Password field -->
+        <div class="field">
+            <input type="password" name="password" id="pwd" placeholder="Enter your password..." required>
+            {% if form.password.errors %}
+                <div class="error">{{ form.password.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="text">
+            <div>
+                <input type="checkbox" name="" id="remember">
+                <label for="remember">Remember me</label>
+            </div>
+            <a href="">Forget password?</a>
+        </div>
+        <span class="error"></span>
+        <span class="success"></span>
+        <input type="submit" value="Login">
+        <p>Don't have an account? <a href="/users/signup">&nbsp; Register</a></p>
+    </form>
+</main>
+
+{% endblock %}

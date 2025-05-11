@@ -1,64 +1,78 @@
-html,
-body {
-  height: 100%;
+.main-content{
+    height: 100vh;
+    width: 100%;
 }
 
-.hi{
-    height: 300px;
-    width: 300px;
-    color: red;
+
+.main-container{
+    margin: 5px;
+}
+
+.main-container ul{
     display: flex;
-    justify-content: center;
     align-items: center;
-    background-color: black;
+    list-style-type: none;
+    border-radius: 5px;
+    font-weight: bold;
+    margin-block: 10px;
+    padding-block: 10px;
+    justify-content: space-around;
 }
 
-body {
-  display: -ms-flexbox;
-  display: -webkit-box;
-  display: flex;
-  -ms-flex-align: center;
-  -ms-flex-pack: center;
-  -webkit-box-align: center;
-  align-items: center;
-  -webkit-box-pack: center;
-  justify-content: center;
-  padding-top: 40px;
-  padding-bottom: 40px;
-  background-color: #f5f5f5;
+.main-container .headings{
+    background-color: #6f8377;
+    color: white;
 }
 
-.form-signin {
-  width: 100%;
-  max-width: 330px;
-  padding: 15px;
-  margin: 0 auto;
+.main-container .headings li{
+    width: 100px;
+    margin-inline: 10px;
+    text-align: center;
 }
 
-.form-signin .checkbox {
-  font-weight: 400;
+.main-container  li#desc{
+    width: 200px;
+    text-align: start;
+}
+.main-container  li#task{
+    width: 100px;
+    text-align: start;
 }
 
-.form-signin .form-control {
-  position: relative;
-  box-sizing: border-box;
-  height: auto;
-  padding: 10px;
-  font-size: 16px;
+.main-container li#date{
+    font-size: 14px;
+    width: 200px;
+    text-align: center;
 }
 
-.form-signin .form-control:focus {
-  z-index: 2;
+
+.expense-list{
+    font-weight: 600;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+    border-left: 1px solid #009688;
 }
 
-.form-signin input[type="email"] {
-  margin-bottom: -1px;
-  border-bottom-right-radius: 0;
-  border-bottom-left-radius: 0;
+.expense-list li{
+    width: 100px;
+    margin-inline: 10px;
+    text-align: start;
 }
 
-.form-signin input[type="password"] {
-  margin-bottom: 10px;
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
+.expense-list button{
+    padding: 4px 10px;
+    cursor: pointer;
+    background-color: #fff;
+    border: none;
+    border-radius: 5px;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+}
+
+.expense-list button#delete-task {
+    background-color: #cf0000f5;;
+    color: white;
+}
+
+.expense-list button#task-edit{
+    background-color: #fff;
+    margin-inline: 8px;
 }

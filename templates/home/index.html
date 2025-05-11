@@ -1,0 +1,15 @@
+{% extends "home/base.html" %}
+
+{% block sidebar %}
+    {% include "home/sidebar.html" %}
+{% endblock %}
+
+{% block header %}
+    {% include "home/header.html" %}
+{% endblock %}
+
+{% block content %}
+    {% block expense_details_block %}
+        {% include "home/expense-details.html" %}
+    {% endblock %}
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends 'users/base.html'%}
+{% load static %}
+{% block content %}
+
+<head>
+    <title>SignUp</title>
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+</head>
+<body>
+<main>
+    <div class="img"></div>
+    <form method="post" id="register" action="{% url 'signup' %}">
+        {% csrf_token %}
+        <h1>Register</h1>
+        
+        <!-- Non-field errors (e.g., form-level errors) -->
+        {% if form.non_field_errors %}
+            <div class="error">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        <!-- Name field -->
+        <div class="field">
+            <input type="text" name="name" placeholder="Enter Your Name..." id="uname" value="{{ form.name.value|default:'' }}" required>
+            {% if form.name.errors %}
+                <div class="error">{{ form.name.errors }}</div>
+            {% endif %}
+        </div>
+
+        <!-- Email field -->
+        <div class="field">
+            <input type="email" name="email" placeholder="Enter Your Email..." id="email" value="{{ form.email.value|default:'' }}" required>
+            {% if form.email.errors %}
+                <div class="error">{{ form.email.errors }}</div>
+            {% endif %}
+        </div>
+
+        <!-- Password field -->
+        <div class="field">
+            <input type="password" name="password" id="pwd" placeholder="Enter your password..." required>
+            {% if form.password.errors %}
+                <div class="error">{{ form.password.errors }}</div>
+            {% endif %}
+        </div>
+
+        <!-- Phone field -->
+        <div class="field">
+            <input type="text" name="phone" placeholder="Enter Your Number..." id="phone" value="{{ form.phone.value|default:'' }}" required>
+            {% if form.phone.errors %}
+                <div class="error">{{ form.phone.errors }}</div>
+            {% endif %}
+        </div>
+
+        <br>
+        <input type="submit" value="Register">
+        <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+    </form>
+</main>
+</body>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% block expense_details_block %}
+<div class="main-container">
+    <ul class="headings">
+        <li id="task">NAME</li>
+        <li id="task">AMOUNT</li>
+        <li id="task">CATEGORY</li>
+        <li id="date">DATE</li>
+        <li id="desc">DESCRIPTION</li>
+        <li id="task">PAID</li>
+        <li id="edit-container">ACTION</li>
+    </ul>
+
+    {% if expense_details %}
+    {% for data in expense_details %}
+        <ul class='expense-list'>
+            <li id='task'>{{ data.name }}</li>
+            <li id='task'>{{ data.amount }}</li>
+            <li id='task'>{{ data.category }}</li>
+            <li id='date'>{{ data.date }}</li>
+            <li id='desc'>{{ data.description }}</li>
+            <li id='task'>{{ data.paid }}</li>
+            <li id="edit-container">
+                <button id="task-edit" onclick="editTask(${element.id})"><i class="bi bi-pencil-square"></i></button>
+                <button id="delete-task" onclick="deleteTask(${element.id})" ><i class="bi bi-trash-fill"></i></button>
+            </li>
+
+        </ul>
+        {% endfor %}
+    {% else %}
+        <p>No expenses are available.</p>
+    {% endif %}
+</div>
+{% endblock %}

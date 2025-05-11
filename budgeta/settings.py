@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     
     # Internal Packages
     "users",
+    "budget",
 ]
 
 MIDDLEWARE = [
