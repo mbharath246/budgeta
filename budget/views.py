@@ -8,7 +8,7 @@ from budget.models import Expense
 @login_required(login_url="/users/login/")
 def header_view(request):
     expense_details = Expense.objects.filter(user_id=request.user.id).all()
-    return render(request, 'home/index.html', {'expense_details': expense_details})
+    return render(request, 'home/index.html', {'expense_details': expense_details, 'active_link': 'home'})
 
 
 @login_required(login_url="/users/login/")
@@ -24,4 +24,4 @@ def add_expense(request):
         else:
            print(form.errors)
     form = AddExpenseForm()
-    return render(request, 'home/add-expense.html', {'form':form})
+    return render(request, 'home/add-expense.html', {'form':form, 'active_link': 'add-expense'})

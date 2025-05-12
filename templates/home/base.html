@@ -82,23 +82,6 @@
     <!-- Bootstrap JS and Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3"></script>
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const content = document.getElementById('content');
-            const toggleIcon = document.getElementById('toggleIcon');
-
-            sidebar.classList.toggle('collapsed');
-            content.classList.toggle('collapsed');
-
-            if (sidebar.classList.contains('collapsed')) {
-                toggleIcon.classList.remove('bi-list');
-                toggleIcon.classList.add('bi-arrow-right');
-            } else {
-                toggleIcon.classList.remove('bi-arrow-right');
-                toggleIcon.classList.add('bi-list');
-            }
-        }
-    </script>
-</body>
+    <script src="{% static 'js/script.js' %}"></script>
+</body> 
 </html>

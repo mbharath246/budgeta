@@ -76,3 +76,9 @@
     background-color: #fff;
     margin-inline: 8px;
 }
+
+/* Active class style */
+.active {
+    color: white;
+    background-color: #6d4545;
+}

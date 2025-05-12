@@ -1,6 +1,14 @@
 <div class="sidebar" id="sidebar">
-    <a href="/budget/index"><i class="bi bi-house me-2"></i><span>Home</span></a>
-    <a href="/budget/add"><i class="bi bi-folder-plus me-2"></i><span>Add Expense</span></a>
-    <a href="#"><i class="bi bi-envelope me-2"></i><span>Contact Us</span></a>
-    <a href="{% url 'logout' %}"><i class="bi bi-box-arrow-left me-2"></i><span>Logout</span></a>
+    <a href="/budget/index" id="home" class="{% if active_link == 'home' %}active{% endif %}">
+        <i class="bi bi-house me-2"></i><span>Home</span>
+    </a>
+    <a href="/budget/add" id="add-expense" class="{% if active_link == 'add-expense' %}active{% endif %}">
+        <i class="bi bi-folder-plus me-2"></i><span>Add Expense</span>
+    </a>
+    <a href="/budget/contact" id="contact" class="{% if active_link == 'contact' %}active{% endif %}">
+        <i class="bi bi-envelope me-2"></i><span>Contact Us</span>
+    </a>
+    <a href="{% url 'logout' %}" id="logout" class="{% if active_link == 'logout' %}active{% endif %}">
+        <i class="bi bi-box-arrow-left me-2"></i><span>Logout</span>
+    </a>
 </div>
