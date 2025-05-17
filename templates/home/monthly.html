@@ -1,0 +1,49 @@
+{% extends "home/base.html" %}
+
+{% block header %}
+    {% include "home/header.html" %}
+{% endblock  %}
+
+{% block sidebar %}
+    {% include "home/sidebar.html" %}
+{% endblock  %}
+
+
+{% block content %}
+    <div class="d-flex justify-content-center mt-2">
+        <h1 class='me-2'> {{ selected_month }} </h1>
+        <h1> {{ selected_year }} </h1>
+    </div>
+    {% if expenses %}
+        <div class="main-container">
+            <ul class="headings">
+                <li id="task">NAME</li>
+                <li id="task">AMOUNT</li>
+                <li id="task">CATEGORY</li>
+                <li id="date">DATE</li>
+                <li id="desc">DESCRIPTION</li>
+                <li id="task">PAID</li>
+            </ul>
+
+            {% for expense in expenses %}
+                <ul class='expense-list'>
+                    <li id='task'>{{ expense.name }}</li>
+                    <li id='task'>{{ expense.amount }}</li>
+                    <li id='task'>{{ expense.category }}</li>
+                    <li id='date'>{{ expense.date }}</li>
+                    <li id='desc'>{{ expense.description }}</li>
+                    <li id='task'>{{ expense.paid }}</li>
+                </ul>
+            {% endfor %}
+
+            {% if amount %}
+            <ul class='expense-list'>
+                <li id='amount'>Total Amount: {{ amount }}</li>
+            </ul>
+            {% endif %}
+
+    {% else %}
+        <p class="text-center mt-4"  style="font-size: 20px;">No expenses found for the selected month and year.</p>
+    {% endif %}
+         </div>
+{% endblock %}

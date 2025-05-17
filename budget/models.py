@@ -29,4 +29,5 @@ class Expense(models.Model):
         ordering = ['-date']
         
     def __str__(self):
-        return f'{self.user_id} Spending: {self.name} '
+        return f'{self.user_id} Spending: {self.name}'
+    

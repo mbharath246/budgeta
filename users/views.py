@@ -24,7 +24,10 @@ def signup_view(request):
         form = forms.SignupForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect(reverse('index'))
+            user = authenticate(request, username=request.POST["username"], password=request.POST["password"])
+            if user is not None and user.is_authenticated:
+                login(request, user)
+                return redirect(reverse('index'))
         else:
             print("Form errors:", form.errors)
     else:

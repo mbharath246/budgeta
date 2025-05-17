@@ -1,9 +1,68 @@
 <nav class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
     <div class="container-fluid">
         <a class="navbar-brand">Budgeta</a>
-        <form class="d-flex" role="search">
-            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+        
+        {% comment %} <form action="" class="d-flex align-items-center" style="color: white;">
+            <label for="">From Date: </label>
+            <input type="date" name="" id=""  class="form-control me-2" aria-label="Search" required>
+            <label for="">To Date: </label>
+            <input type="date" name="" id=""  class="form-control me-2" aria-label="Search">
             <button class="btn btn-outline-success" type="submit">Search</button>
-        </form>
+
+        </form> {% endcomment %}
+        {% if active_link == "home" %}
+            <form method="GET" action="{% url 'index' %}" class='filter'>
+                <select name="category" onchange="this.form.submit()">
+                    <option hidden>Filter By Category</option>
+                    <option value="Personal" name='Personal' {% if selected_category == 'Personal' %}selected{% endif %}>Personal</option>
+                    <option value="Home" name='Home' {% if selected_category == 'Home' %}selected{% endif %}>Home</option>
+                    <option value="Other" name='Other' {% if selected_category == 'Other' %}selected{% endif %}>Other</option>
+                    <option value="All" name='All' {% if selected_category == 'All' %}selected{% endif %}>All</option>
+                </select>
+
+                <select name="paid" onchange="this.form.submit()">
+                    <option hidden>Paid By</option>
+                    <option value="UPI" name='UPI' {% if paid_by == 'UPI' %}selected{% endif %}>UPI</option>
+                    <option value="Cash" name='Cash' {% if paid_by == 'Cash' %}selected{% endif %}>Cash</option>
+                    <option value="Credit Card" name='Credit Card' {% if paid_by == 'Credit Card' %}selected{% endif %}>Credit Card</option>
+                    <option value="Online Payments" name='Online Payments' {% if paid_by == 'Online Payments' %}selected{% endif %}>Online Payments</option>
+                    <option value="Other" name='Other' {% if paid_by == 'Other' %}selected{% endif %}>Other</option>
+                    <option value="All" name='All' {% if paid_by == 'All' %}selected{% endif %}>All</option>
+                </select>
+            </form>
+        {% elif active_link == 'monthly-expenses' %}
+            <form method="GET" action="{% url 'month' %}">
+                <label for="month">Month:</label>
+                <select name="month">
+                    <option value="January" {% if selected_month == 'January' %}selected{% endif %}>January</option>
+                    <option value="February" {% if selected_month == 'February' %}selected{% endif %}>February</option>
+                    <option value="March" {% if selected_month == 'March' %}selected{% endif %}>March</option>
+                    <option value="April" {% if selected_month == 'April' %}selected{% endif %}>April</option>
+                    <option value="May" {% if selected_month == 'May' %}selected{% endif %}>May</option>
+                    <option value="June" {% if selected_month == 'June' %}selected{% endif %}>June</option>
+                    <option value="July" {% if selected_month == 'July' %}selected{% endif %}>July</option>
+                    <option value="August" {% if selected_month == 'August' %}selected{% endif %}>August</option>
+                    <option value="September" {% if selected_month == 'September' %}selected{% endif %}>September</option>
+                    <option value="October" {% if selected_month == 'October' %}selected{% endif %}>October</option>
+                    <option value="November" {% if selected_month == 'November' %}selected{% endif %}>November</option>
+                    <option value="December" {% if selected_month == 'December' %}selected{% endif %}>December</option>
+                </select>
+
+                <label for="year">Year:</label>
+                <input type="number" name="year" value="{{ selected_year }}" placeholder="Year" min="2000" required>
+                
+                <button type="submit">Filter</button>
+            </form>
+        {% elif active_link == 'yearly-expenses' %}
+            <form method="GET" action="{% url 'year' %}">
+                <label for="year">Year:</label>
+                <input type="number" name="year" value="{{ selected_year }}" placeholder="year ex: 2025" required min="2000">
+                
+                <button type="submit">Filter</button>
+            </form>
+        {% endif %}
+
+
+
     </div>
 </nav>

@@ -20,12 +20,18 @@
             <li id='desc'>{{ data.description }}</li>
             <li id='task'>{{ data.paid }}</li>
             <li id="edit-container">
-                <button id="task-edit" onclick="editTask(${element.id})"><i class="bi bi-pencil-square"></i></button>
-                <button id="delete-task" onclick="deleteTask(${element.id})" ><i class="bi bi-trash-fill"></i></button>
+                <button id="task-edit"><a href="{% url 'edit' data.id %}" > <i class="bi bi-pencil-square" style="color:black;"></i></a></button>
+                <button id="delete-task"><a href="{% url 'delete' data.id %}" > <i class="bi bi-trash-fill" style="color:white;"></i></a></button>
             </li>
-
         </ul>
         {% endfor %}
+        
+        {% if amount %}
+            <ul class='expense-list'>
+                <li id='amount'>Total Amount: {{ amount }}</li>
+            </ul>
+        {% endif %}
+        
     {% else %}
         <p>No expenses are available.</p>
     {% endif %}

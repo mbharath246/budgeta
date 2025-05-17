@@ -34,3 +34,4 @@ class AddExpenseForm(forms.ModelForm):
         }
 
         exclude = ['user_id']
+        

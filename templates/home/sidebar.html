@@ -5,8 +5,11 @@
     <a href="/budget/add" id="add-expense" class="{% if active_link == 'add-expense' %}active{% endif %}">
         <i class="bi bi-folder-plus me-2"></i><span>Add Expense</span>
     </a>
-    <a href="/budget/contact" id="contact" class="{% if active_link == 'contact' %}active{% endif %}">
-        <i class="bi bi-envelope me-2"></i><span>Contact Us</span>
+    <a href="/budget/month" id="monthly-expenses" class="{% if active_link == 'monthly-expenses' %}active{% endif %}">
+        <i class="bi bi-calendar-month me-2"></i><span>Monthly Expenses</span>
+    </a>
+    <a href="/budget/year" id="yearly-expenses" class="{% if active_link == 'yearly-expenses' %}active{% endif %}">
+        <i class="bi bi-calendar me-2"></i><span>Yearly Expenses</span>
     </a>
     <a href="{% url 'logout' %}" id="logout" class="{% if active_link == 'logout' %}active{% endif %}">
         <i class="bi bi-box-arrow-left me-2"></i><span>Logout</span>

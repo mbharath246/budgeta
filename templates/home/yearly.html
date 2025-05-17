@@ -1,0 +1,40 @@
+{% extends "home/base.html" %}
+
+{% block header %}
+    {% include "home/header.html" %}
+{% endblock  %}
+
+{% block sidebar %}
+    {% include "home/sidebar.html" %}
+{% endblock  %}
+
+
+{% block content %}
+    <div class="d-flex justify-content-center mt-2">
+        <h1 class='me-2'>Expenses for {{ selected_year }} <b style="font-weight: 600;">: {{ amount }}</b></h1>
+    </div>
+    {% if monthly_summary %}
+        <div class="main-container">
+            <ul class="headings">
+                <li id="task">MONTH</li>
+                <li id="task">AMOUNT</li>
+                <li id="edit-container">ACTION</li>
+            </ul>
+
+            {% for month, total in monthly_summary.items %}
+                <ul class='expense-list'>
+                    <li id='task'>{{ month }}</li>
+                    <li id='task'>{{ total }} ₹</li>
+                    <li id="edit-container">
+                        <a href="{% url 'month' %}?month={{ month }}&year={{ selected_year }}" class="btn btn-primary">
+                            <i class="bi bi-pencil-square"></i>&nbsp; View
+                        </a>
+                    </li>
+                </ul>
+            {% endfor %}
+            
+    {% else %}
+        <p class="text-center mt-4"  style="font-size: 20px;">No expenses found for the selected month and year.</p>
+    {% endif %}
+         </div>
+{% endblock %}

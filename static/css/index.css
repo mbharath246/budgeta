@@ -47,12 +47,12 @@
 
 
 .expense-list{
-    font-weight: 600;
     box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
     border-left: 1px solid #009688;
 }
 
 .expense-list li{
+    font-weight: 600;
     width: 100px;
     margin-inline: 10px;
     text-align: start;
@@ -77,8 +77,76 @@
     margin-inline: 8px;
 }
 
+.expense-list li#amount {   
+    width: 100%;
+    margin-inline: 10px;
+    text-align: start;
+    font-weight: bolder;
+}
+
 /* Active class style */
 .active {
     color: white;
     background-color: #6d4545;
+}
+
+
+header .filter select{
+    padding: 5px 20px;
+    border: none;
+    background: #5a5555;
+    color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+    font-weight: bold;
+   cursor:  pointer;
+   outline: none;
+}
+
+header .filter select option{
+    cursor: pointer;
+}
+
+
+.delete-container{
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.delete-container .container{
+    width: 500px;
+    text-align: center;
+    background-color: snow;
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
+}
+
+.delete-container button{
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    margin-block: 20px;
+    margin-inline: 10px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.delete-container button#yes{
+    background-color: #008000b8;
+    color: white;
+}
+
+.delete-container button#no{
+    background-color: #ff0000b0;
+    color: white;
+}
+.delete-container button#yes:hover{
+    background-color: #026802;
+}
+.delete-container button#no:hover{
+    background-color: #bb0808b0;
 }
