@@ -1,5 +1,5 @@
 <nav class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
-    <div class="container-fluid">
+    <div class="container-navbar">
         <a class="navbar-brand">Budgeta</a>
         
         {% comment %} <form action="" class="d-flex align-items-center" style="color: white;">
@@ -31,8 +31,7 @@
                 </select>
             </form>
         {% elif active_link == 'monthly-expenses' %}
-            <form method="GET" action="{% url 'month' %}">
-                <label for="month">Month:</label>
+            <form method="GET" action="{% url 'month' %}" class='filter' id="month">
                 <select name="month">
                     <option value="January" {% if selected_month == 'January' %}selected{% endif %}>January</option>
                     <option value="February" {% if selected_month == 'February' %}selected{% endif %}>February</option>
@@ -48,16 +47,12 @@
                     <option value="December" {% if selected_month == 'December' %}selected{% endif %}>December</option>
                 </select>
 
-                <label for="year">Year:</label>
-                <input type="number" name="year" value="{{ selected_year }}" placeholder="Year" min="2000" required>
-                
+                <input type="number" name="year" value="{{ selected_year }}" placeholder="Year" min="2000" required>                
                 <button type="submit">Filter</button>
             </form>
         {% elif active_link == 'yearly-expenses' %}
-            <form method="GET" action="{% url 'year' %}">
-                <label for="year">Year:</label>
+            <form method="GET" action="{% url 'year' %}" class='filter'>
                 <input type="number" name="year" value="{{ selected_year }}" placeholder="year ex: 2025" required min="2000">
-                
                 <button type="submit">Filter</button>
             </form>
         {% endif %}

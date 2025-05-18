@@ -1,11 +1,83 @@
-.main-content{
-    height: 100vh;
+header{
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
+    height: 60px;
+    z-index: 1000;
+}
+
+.container-navbar{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+header .filter select{
+    padding: 5px 20px;
+    border: none;
+    background: #5a5555;
+    color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+    font-weight: bold;
+   cursor:  pointer;
+   outline: none;
+}
+
+header .filter select option{
+    cursor: pointer;
+}
+
+
+/* main */
+.main-content{
+    display: flex;
+    margin-top: 60px;
+}
+
+
+
+/* SideBar */
+.sidebar {
+    height: 100vh;
+    width: 250px;
+    position: fixed;
+    left: 0;
+    background-color: #343a40;
+    transition: width 0.3s;
+}
+.sidebar a {
+    color: white;
+    text-decoration: none;
+    display: block;
+    padding: 10px 20px;
+    font-size: 1.1rem;
+}
+.sidebar a:hover {
+    background-color: #495057;
+}
+.content {
+    margin-left: 250px;
+    transition: margin-left 0.3s;
+}
+.toggle-btn {
+    color: white;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+.navbar {
+    margin: 0;
+    padding: 10px 20px;
 }
 
 
 .main-container{
     margin: 5px;
+    margin-left: 300px;
+    width: 75%;
 }
 
 .main-container ul{
@@ -22,6 +94,7 @@
 .main-container .headings{
     background-color: #6f8377;
     color: white;
+    /* width: fit-content; */
 }
 
 .main-container .headings li{
@@ -87,24 +160,7 @@
 /* Active class style */
 .active {
     color: white;
-    background-color: #6d4545;
-}
-
-
-header .filter select{
-    padding: 5px 20px;
-    border: none;
-    background: #5a5555;
-    color: white;
-    border-radius: 10px;
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
-    font-weight: bold;
-   cursor:  pointer;
-   outline: none;
-}
-
-header .filter select option{
-    cursor: pointer;
+    background-color: royalblue;
 }
 
 
@@ -149,4 +205,103 @@ header .filter select option{
 }
 .delete-container button#no:hover{
     background-color: #bb0808b0;
+}
+
+.button{
+    border: none;
+    border-radius: 10px;
+    font-size: 12px;
+    padding: 4px 20px;
+    background: blue;
+    text-decoration: none;
+    color: white;
+    padding-block: 10px;
+}
+
+.filter input{
+    width: 150px;
+    border-radius: 10px;
+    border: none;
+    text-align: center;
+    font-size: 16px;
+    padding: 5px 14px;
+    background: #5a5555;
+    box-shadow: 0 0 8px rgb(0 0 0 / 50%);
+}
+
+.filter button{
+    border: none;
+    border-radius: 10px;
+    padding: 5px 20px;
+    font-size: 16px;
+    background: #516c6c;
+    cursor: pointer;
+}
+.filter button:hover{
+    background-color: #2b5d5d;
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 80px;
+        height: -webkit-fill-available;
+    }
+    .sidebar a{
+        font-size: 14px;
+        text-align: center;
+        padding: 10px 10px; 
+    }
+    .sidebar a span{
+        font-size: 12px;
+        display: block;
+        overflow-wrap: break-word;
+    }
+    header{
+        height: 60px;
+    }
+    .main-container{
+        margin-left: 90px;
+        width: 100%;
+        font-size: 13px;
+    }
+    .main-container ul{
+        width: fit-content;
+        height: 35px;
+    }
+    .container-navbar{
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+    }
+    header .filter select{
+        width: 100px;
+        font-size: 10px;
+        padding: 6px;
+    }
+    .filter input{
+        width: 80px;
+        border-radius: 10px;
+        border: none;
+        text-align: center;
+        font-size: 12px;
+        padding-block: 4px;
+        background: #5a5555;
+        box-shadow: 0 0 8px rgb(0 0 0 / 50%);
+    }
+
+    .filter button{
+        border: none;
+        border-radius: 5px;
+        font-size: 12px;
+        padding: 4px 20px;
+        background: #516c6c;
+    }
+    form#month select, form#month input{
+        width: 80px;
+    }
+
+    .button {
+        padding: 5px 10px;
+        font-size: 12px;
+    }
 }

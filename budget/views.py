@@ -8,7 +8,7 @@ from budget.models import Expense
 
 
 @login_required(login_url="/users/login/")
-def header_view(request):
+def home_view(request):
     category = request.GET.get("category")
     now = datetime.now()
     if category is None or category == "All":

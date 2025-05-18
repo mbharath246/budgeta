@@ -14,7 +14,7 @@
         <h1 class='me-2'>Expenses for {{ selected_year }} <b style="font-weight: 600;">: {{ amount }}</b></h1>
     </div>
     {% if monthly_summary %}
-        <div class="main-container">
+        <div>
             <ul class="headings">
                 <li id="task">MONTH</li>
                 <li id="task">AMOUNT</li>
@@ -26,7 +26,7 @@
                     <li id='task'>{{ month }}</li>
                     <li id='task'>{{ total }} ₹</li>
                     <li id="edit-container">
-                        <a href="{% url 'month' %}?month={{ month }}&year={{ selected_year }}" class="btn btn-primary">
+                        <a href="{% url 'month' %}?month={{ month }}&year={{ selected_year }}" class="button">
                             <i class="bi bi-pencil-square"></i>&nbsp; View
                         </a>
                     </li>
