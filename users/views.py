@@ -7,6 +7,9 @@ from users import forms
 
 # Create your views here.
 def login_view(request):
+    if request.user.is_authenticated:
+        return redirect('index')
+    
     form = forms.LoginForm()
     if request.method == 'POST':
         form = forms.LoginForm(request.POST)
