@@ -87,15 +87,15 @@ WSGI_APPLICATION = 'budgeta.wsgi.application'
 if not DEBUG:
     DATABASES = {
         'default': {
-            "ENGINE": "django.db.backends.mysql",
+            "ENGINE": env('DATABASE_ENGINE'),
             "NAME": env('DATABASE_NAME'),
-            "USER": env('USER'),
-            "PASSWORD": env('PASSWORD'),
-            "HOST": env('HOST'),
-            "PORT": '3306',
+            "USER": env('DATABASE_USER'),
+            "PASSWORD": env('DATABASE_PASSWORD'),
+            "HOST": env('DATABASE_HOST'),
+            "PORT": env('PORT'),
         }
     }
-    ALLOWED_HOSTS = ['*']
+    ALLOWED_HOSTS = env('ALLOWED_HOSTS').split(',')
     
 else:
     DATABASES = {
