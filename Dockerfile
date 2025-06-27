@@ -8,6 +8,15 @@ ENV PYTHONUNBUFFERED=1
 # Set work directory
 WORKDIR /app
 
+RUN apt-get update && apt-get install -y \
+    gcc \
+    libmariadb-dev \
+    libmariadb-dev-compat \
+    pkg-config \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+
 # Copy requirements.txt to the container
 COPY requirements.txt .
 

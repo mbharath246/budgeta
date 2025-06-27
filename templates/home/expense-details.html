@@ -1,3 +1,5 @@
+{% load inr_format %}
+
 {% block expense_details_block %}
 <div>
     <ul class="headings">
@@ -14,7 +16,7 @@
     {% for data in expense_details %}
         <ul class='expense-list'>
             <li id='task'>{{ data.name }}</li>
-            <li id='task'>{{ data.amount }}</li>
+            <li id='task'>{{ data.amount|INR }}</li>
             <li id='task'>{{ data.category }}</li>
             <li id='date'>{{ data.date }}</li>
             <li id='desc'>{{ data.description }}</li>
@@ -28,7 +30,7 @@
         
         {% if amount %}
             <ul class='expense-list'>
-                <li id='amount'>Total Amount: {{ amount }}</li>
+                <li id='amount'>Total Amount: {{ amount|INR }}</li>
             </ul>
         {% endif %}
         

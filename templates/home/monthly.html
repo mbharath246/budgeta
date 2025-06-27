@@ -8,6 +8,7 @@
     {% include "home/sidebar.html" %}
 {% endblock  %}
 
+{% load inr_format %}
 
 {% block content %}
 
@@ -29,7 +30,7 @@
         {% for expense in expenses %}
             <ul class='expense-list'>
                 <li id='task'>{{ expense.name }}</li>
-                <li id='task'>{{ expense.amount }}</li>
+                <li id='task'>{{ expense.amount|INR }}</li>
                 <li id='task'>{{ expense.category }}</li>
                 <li id='date'>{{ expense.date }}</li>
                 <li id='desc'>{{ expense.description }}</li>
@@ -39,7 +40,7 @@
 
         {% if amount %}
         <ul class='expense-list'>
-            <li id='amount'>Total Amount: {{ amount }}</li>
+            <li id='amount'>Total Amount: {{ amount|INR }}</li>
         </ul>
         {% endif %}
 

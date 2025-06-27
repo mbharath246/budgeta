@@ -8,10 +8,11 @@
     {% include "home/sidebar.html" %}
 {% endblock  %}
 
+{% load inr_format %}   
 
 {% block content %}
     <div class="d-flex justify-content-center mt-2">
-        <h1 class='me-2'>Expenses for {{ selected_year }} <b style="font-weight: 600;">: {{ amount }}</b></h1>
+        <h1 class='me-2'>Expenses for {{ selected_year }} <b style="font-weight: 600;">: {{ amount|INR }}</b></h1>
     </div>
     {% if monthly_summary %}
         <div>
@@ -24,7 +25,7 @@
             {% for month, total in monthly_summary.items %}
                 <ul class='expense-list'>
                     <li id='task'>{{ month }}</li>
-                    <li id='task'>{{ total }} ₹</li>
+                    <li id='task'>{{ total|INR }}</li>
                     <li id="edit-container">
                         <a href="{% url 'month' %}?month={{ month }}&year={{ selected_year }}" class="button">
                             <i class="bi bi-pencil-square"></i>&nbsp; View
