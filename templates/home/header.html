@@ -31,6 +31,31 @@
                 </select>
             </form>
         {% elif active_link == 'monthly-expenses' %}
+            <form method="GET" action="{% url 'month' %}" class='filter'>
+                <!-- Preserve selected month and year -->
+                <input type="hidden" name="month" value="{{ selected_month }}">
+                <input type="hidden" name="year" value="{{ selected_year }}">
+
+                <select name="category" onchange="this.form.submit()">
+                    <option hidden>Filter By Category</option>
+                    <option value="Personal" {% if selected_category == 'Personal' %}selected{% endif %}>Personal</option>
+                    <option value="Home" {% if selected_category == 'Home' %}selected{% endif %}>Home</option>
+                    <option value="Other" {% if selected_category == 'Other' %}selected{% endif %}>Other</option>
+                    <option value="All" {% if selected_category == 'All' %}selected{% endif %}>All</option>
+                </select>
+
+                <select name="paid" onchange="this.form.submit()">
+                    <option hidden>Paid By</option>
+                    <option value="UPI" {% if paid_by == 'UPI' %}selected{% endif %}>UPI</option>
+                    <option value="Cash" {% if paid_by == 'Cash' %}selected{% endif %}>Cash</option>
+                    <option value="Credit Card" {% if paid_by == 'Credit Card' %}selected{% endif %}>Credit Card</option>
+                    <option value="Online Payments" {% if paid_by == 'Online Payments' %}selected{% endif %}>Online Payments</option>
+                    <option value="Others" {% if paid_by == 'Others' %}selected{% endif %}>Others</option>
+                    <option value="All" {% if paid_by == 'All' %}selected{% endif %}>All</option>
+                </select>
+            </form>
+
+
             <form method="GET" action="{% url 'month' %}" class='filter' id="month">
                 <select name="month">
                     <option value="January" {% if selected_month == 'January' %}selected{% endif %}>January</option>

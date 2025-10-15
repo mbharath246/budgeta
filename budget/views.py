@@ -62,36 +62,55 @@ def add_expense(request):
 def monthly_expenses(request):
     selected_month = request.GET.get('month')
     selected_year = request.GET.get('year')
+    selected_category = request.GET.get('category')
+    paid = request.GET.get('paid')
+    now = datetime.now()
+
     months_dict = {
-        "January": 1,
-        "February": 2,
-        "March": 3,
-        "April": 4,
-        "May": 5,
-        "June": 6,
-        "July": 7,
-        "August": 8,
-        "September": 9,
-        "October": 10,
-        "November": 11,
-        "December": 12
+        "January": 1, "February": 2, "March": 3, "April": 4,
+        "May": 5, "June": 6, "July": 7, "August": 8,
+        "September": 9, "October": 10, "November": 11, "December": 12
     }
 
     if selected_month and selected_year:
-        expenses = Expense.objects.filter(user_id=request.user.id, date__year=selected_year, date__month=months_dict[selected_month])
+        expenses = Expense.objects.filter(
+            user_id=request.user.id,
+            date__year=selected_year,
+            date__month=months_dict[selected_month]
+        )
     else:
-        now = datetime.now()
         selected_month = now.strftime("%B")
         selected_year = now.year
-        expenses = Expense.objects.filter(user_id=request.user.id, date__year=now.year, date__month=now.month)
-    
+        expenses = Expense.objects.filter(
+            user_id=request.user.id,
+            date__year=now.year,
+            date__month=now.month
+        )
+    if selected_category:
+        if selected_category == "All":
+            expenses = expenses.filter(user_id=request.user.id).all()
+        elif selected_category in ("Personal", "Home", "Other"):
+            expenses = expenses.filter(
+                user_id=request.user.id, category=selected_category
+            ).all()
+
+    if paid:
+        if paid == "All":
+            expenses = expenses.filter(user_id=request.user.id).all()
+        elif paid in ("UPI", "Cash", "Credit Card", "Online Payments", "Others"):
+            expenses = expenses.filter(
+                user_id=request.user.id, paid=paid
+            ).all()
+
     amount = sum(expenses.values_list('amount', flat=True))
 
     context = {
         'expenses': expenses,
-        'selected_month': selected_month ,
+        'selected_month': selected_month,
         'selected_year': selected_year,
-        'amount':amount,
+        'selected_category': selected_category,
+        'paid_by': paid,
+        'amount': amount,
         "active_link": "monthly-expenses",
     }
     return render(request, "home/monthly.html", context)
