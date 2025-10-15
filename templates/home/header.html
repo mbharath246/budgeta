@@ -25,7 +25,9 @@
                     <option value="UPI" name='UPI' {% if paid_by == 'UPI' %}selected{% endif %}>UPI</option>
                     <option value="Cash" name='Cash' {% if paid_by == 'Cash' %}selected{% endif %}>Cash</option>
                     <option value="Credit Card" name='Credit Card' {% if paid_by == 'Credit Card' %}selected{% endif %}>Credit Card</option>
-                    <option value="Online Payments" name='Online Payments' {% if paid_by == 'Online Payments' %}selected{% endif %}>Online Payments</option>
+                    <option value="Debit Card" name='Debit Card' {% if paid_by == 'Debit Card' %}selected{% endif %}>Debit Card</option>
+                    <option value="Gift Card" {% if paid_by == 'Gift Card' %}selected{% endif %}>Gift Card</option>
+                    <option value="Net Banking" name='Net Banking' {% if paid_by == 'Net Banking' %}selected{% endif %}>Net Banking</option>
                     <option value="Others" name='Other' {% if paid_by == 'Others' %}selected{% endif %}>Others</option>
                     <option value="All" name='All' {% if paid_by == 'All' %}selected{% endif %}>All</option>
                 </select>
@@ -49,7 +51,9 @@
                     <option value="UPI" {% if paid_by == 'UPI' %}selected{% endif %}>UPI</option>
                     <option value="Cash" {% if paid_by == 'Cash' %}selected{% endif %}>Cash</option>
                     <option value="Credit Card" {% if paid_by == 'Credit Card' %}selected{% endif %}>Credit Card</option>
-                    <option value="Online Payments" {% if paid_by == 'Online Payments' %}selected{% endif %}>Online Payments</option>
+                    <option value="Debit Card" name='Debit Card' {% if paid_by == 'Debit Card' %}selected{% endif %}>Debit Card</option>
+                    <option value="Gift Card" {% if paid_by == 'Gift Card' %}selected{% endif %}>Gift Card</option>
+                    <option value="Net Banking" {% if paid_by == 'Net Banking' %}selected{% endif %}>Net Banking</option>
                     <option value="Others" {% if paid_by == 'Others' %}selected{% endif %}>Others</option>
                     <option value="All" {% if paid_by == 'All' %}selected{% endif %}>All</option>
                 </select>

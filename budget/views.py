@@ -24,7 +24,7 @@ def home_view(request):
     if paid:
         if paid is None or paid == "All":
             expense_details = expense_details.filter(user_id=request.user.id).all()
-        elif paid in ("UPI", "Cash", "Credit Card", "Online Payments", "Others"):
+        elif paid in ("UPI", "Cash", "Credit Card", "Debit Card", "Gift Card", "Net Banking", "Others"):
             expense_details = expense_details.filter(
                 user_id=request.user.id, paid=paid
             ).all()
@@ -97,7 +97,7 @@ def monthly_expenses(request):
     if paid:
         if paid == "All":
             expenses = expenses.filter(user_id=request.user.id).all()
-        elif paid in ("UPI", "Cash", "Credit Card", "Online Payments", "Others"):
+        elif paid in ("UPI", "Cash", "Credit Card", "Debit Card", "Gift Card", "Net Banking", "Others"):
             expenses = expenses.filter(
                 user_id=request.user.id, paid=paid
             ).all()

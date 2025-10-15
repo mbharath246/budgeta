@@ -20,7 +20,9 @@ class Expense(models.Model):
         "UPI":"UPI",
         "Cash": "Cash",
         "Credit Card": "Credit Card",
-        "Online Payments": "Online Payments", 
+        "Debit Card": "Debit Card",
+        "Gift Card": "Gift Card",
+        "Net Banking": "Net Banking", 
         "Others": "Others"
     }
     paid = models.CharField(max_length=30, verbose_name=_('Payment Type'), choices=paid_choices)
