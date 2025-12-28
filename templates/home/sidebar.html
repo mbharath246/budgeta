@@ -11,6 +11,9 @@
     <a href="/budget/year" id="yearly-expenses" class="{% if active_link == 'yearly-expenses' %}active{% endif %}">
         <i class="bi bi-calendar me-2"></i><span>Yearly Expenses</span>
     </a>
+    <a href="/budget/chatbot" id="chatbot" class="{% if active_link == 'chatbot' %}active{% endif %}">
+        <i class="bi bi bi-robot me-2"></i><span>AI Assistant</span>
+    </a>
     <a href="{% url 'logout' %}" id="logout" class="{% if active_link == 'logout' %}active{% endif %}">
         <i class="bi bi-box-arrow-left me-2"></i><span>Logout</span>
     </a>

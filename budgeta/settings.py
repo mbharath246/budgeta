@@ -34,6 +34,16 @@ DEBUG = env.bool('DEBUG', default=False)
 
 ALLOWED_HOSTS = []
 
+GROQ_API_KEY = env('GROQ_API_KEY')
+GROQ_LLM_MODEL = env('GROQ_LLM_MODEL', default="llama-3.3-70b-versatile")
+
+COHERE_EMBEDDINGS_INPUT_TYPE = env('COHERE_EMBEDDINGS_INPUT_TYPE', default="search_query")
+COHERE_API_KEY = env('COHERE_API_KEY')
+COHERE_EMBEDDINGS_MODEL = env('COHERE_EMBEDDINGS_MODEL')
+
+QDRANT_API_KEY = env('QDRANT_API_KEY', default=None)
+QDRANT_URL = env('QDRANT_URL')
+QDRANT_COLLECTION = env('QDRANT_COLLECTION')
 
 # Application definition
 
@@ -92,7 +102,7 @@ if not DEBUG:
             "USER": env('DATABASE_USER'),
             "PASSWORD": env('DATABASE_PASSWORD'),
             "HOST": env('DATABASE_HOST'),
-            "PORT": env('PORT'),
+            "PORT": env('DATABASE_PORT'),
         }
     }
     ALLOWED_HOSTS = env('ALLOWED_HOSTS').split(',')

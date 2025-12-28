@@ -1,0 +1,38 @@
+{% extends "home/base.html" %}
+
+{% block header %}
+    {% include "home/header.html" %}
+{% endblock  %}
+
+{% block sidebar %}
+    {% include "home/sidebar.html" %}
+{% endblock  %}
+
+{% load inr_format %}
+
+
+{% block content %}
+<h1 class="chat-title">💬 Expense Assistant</h1>
+
+<div class="chat-container">
+    <div id="chat-output"></div>
+
+    <div id="loader" class="loader hidden">
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+    </div>
+
+    <form class="chatbot" id="chat-form">
+        {% csrf_token %}
+        <input
+            type="text"
+            name="query"
+            id="query-input"
+            placeholder="Ask me about expenses..."
+            required
+        >
+        <button type="submit">Send</button>
+    </form>
+</div>
+{% endblock %}

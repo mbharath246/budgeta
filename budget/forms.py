@@ -1,6 +1,7 @@
 from django import forms
-from budget.models import Expense
 from django.contrib.admin.widgets import AdminDateWidget
+
+from budget.models import Expense
 
 
 class AddExpenseForm(forms.ModelForm):

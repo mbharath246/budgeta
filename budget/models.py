@@ -2,7 +2,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from users.models import Users
 
-# Create your models here.
+
 class Expense(models.Model):
     user_id = models.ForeignKey(Users, on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=50)
@@ -32,4 +32,19 @@ class Expense(models.Model):
         
     def __str__(self):
         return f'{self.user_id} Spending: {self.name}'
+    
+      
+class ChatConversations(models.Model):
+    user_id = models.ForeignKey(Users, on_delete=models.CASCADE, null=True, blank=True)
+    conversation_id = models.UUIDField(unique=True)
+    chat_name = models.CharField(max_length=100)
+    create_time = models.DateTimeField(auto_now_add=True)
+    
+    
+class ChatHistory(models.Model):
+    user_id = models.ForeignKey(Users, on_delete=models.CASCADE, null=True, blank=True)
+    conversation_id = models.ForeignKey(ChatConversations, on_delete=models.CASCADE)
+    question = models.CharField(max_length=1000)
+    response = models.TextField()
+    create_time = models.DateTimeField(auto_now_add=True)
     

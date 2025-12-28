@@ -2,9 +2,14 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Sum
 from datetime import datetime
+from uuid import uuid4
+from django.http import JsonResponse, StreamingHttpResponse
+import logging as logger
 
 from budget.forms import AddExpenseForm
-from budget.models import Expense
+from budget.models import Expense, ChatConversations, ChatHistory
+from budget.services.qdrant_service import qdrant_db
+from budget.services.llm_client import llm
 
 
 @login_required(login_url="/users/login/")
@@ -49,7 +54,21 @@ def add_expense(request):
         form = AddExpenseForm(request.POST)
         if form.is_valid():
             form.instance.user_id = request.user
-            form.save()
+            data = form.save()
+            payload_text = {
+                "expense name": data.name,
+                "amount": float(data.amount),
+                "category": data.category,
+                "date": data.date.strftime("%d/%m/%Y, %H:%M:%S"),
+                "description": data.description,
+                "paid_by": data.paid
+            }
+            metadata = {
+                **payload_text,
+                "user_id": request.user.id
+            }
+            print(payload_text)
+            qdrant_db.store_items(data.id, texts=[str(payload_text)], metadatas=[metadata])
             return redirect("/budget/index")
         else:
             print(form.errors)
@@ -161,8 +180,22 @@ def edit_expense(request, expense_id):
     if request.method == "POST":
         form = AddExpenseForm(request.POST, instance=expense)
         if form.is_valid():
-            form.save()
-            return redirect('index')  # Redirect to expense list page
+            data = form.save()
+            payload_text = {
+                "expense name": data.name,
+                "amount": float(data.amount),
+                "category": data.category,
+                "date": data.date.strftime("%d/%m/%Y, %H:%M:%S"),
+                "description": data.description,
+                "paid_by": data.paid
+            }
+            metadata = {
+                **payload_text,
+                "user_id": request.user.id
+            }
+            print(payload_text)
+            qdrant_db.store_items(data.id, texts=[str(payload_text)], metadatas=[metadata])
+            return redirect('index')
     else:
         form = AddExpenseForm(instance=expense)
     
@@ -174,6 +207,104 @@ def delete_expense(request, expense_id):
     expense = get_object_or_404(Expense, id=expense_id, user_id=request.user.id)
     if request.method == "POST":
         expense.delete()
+        qdrant_db.delete_item(expense_id)
         return redirect('index')
     
     return render(request, 'home/delete-expense.html', {'expense': expense})
+
+
+@login_required(login_url="/users/login")
+def chatbot(request, cid=None):
+    context = {
+        "active_link": "chatbot",
+        "cid": cid
+    }
+    
+    if request.method == 'POST':
+        query = request.POST.get("query")
+        user_id = request.user.id
+        current_chat = ChatConversations.objects.filter(conversation_id=cid, user_id=user_id).first()
+        if not current_chat:
+            current_chat = ChatConversations(
+                user_id=request.user,
+                conversation_id=uuid4(),
+                chat_name=query if len(query) < 100 else query[:60] + "..."
+            )
+            current_chat.save()
+        
+        conversation_id = current_chat.conversation_id
+        
+        print(conversation_id, current_chat.create_time)
+        search_results = qdrant_db.search_points(query, user_id)
+        logger.info(f"found retrieved docs {len(search_results)}")
+        print(f"found retrieved docs {len(search_results)}")
+        prompt = f"""
+            You are an intelligent Expense Assistant.
+
+            Your task is to respond appropriately based on the user's intent.
+
+            ==============================
+            INTENT RULES (MANDATORY)
+            ==============================
+
+            1. If the user query is conversational or generic
+            (examples: "hi", "hello", "how are you", "what can you do"):
+            - Respond with ONLY the **Answer** section.
+            - DO NOT include "Key Details", tables, lists, or extra sections.
+            - All the expense details are in rupees only.
+
+            2. If the user query is related to expenses, finance, totals, summaries,
+            categories, dates, comparisons, or calculations:
+            - Respond with **Answer + Key Details**.
+            - Use bullet points or tables inside Key Details where applicable.
+
+            3. Never include empty or generic Key Details.
+            4. Do not add sections unless they provide meaningful information.
+
+            ==============================
+            OUTPUT FORMAT
+            ==============================
+
+            For conversational queries:
+
+            ## ✅ Answer
+            <short, friendly response>
+
+            --------------------------------
+
+            For financial / expense queries:
+
+            ## ✅ Answer
+            <direct summary sentence>
+
+            ## 📌 Key Details
+            <structured details, bullet points or tables>
+
+            ==============================
+            CONTEXT
+            ==============================
+
+            User Question:
+            {query}
+
+            Retrieved Expense Records:
+            {search_results}
+        """
+
+        response = llm.invoke(prompt)
+        
+        chat_history = ChatHistory(
+            user_id = request.user,
+            conversation_id = current_chat,
+            question = query,
+            response = response.content,
+        )
+        chat_history.save()
+        
+        context["cid"] = conversation_id
+        return JsonResponse({
+            "message": response.content,
+            "cid": str(current_chat.conversation_id)
+        })
+    
+    return render(request, 'chatbot/chatbot.html', context)

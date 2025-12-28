@@ -305,3 +305,210 @@ header .filter select option{
         font-size: 12px;
     }
 }
+
+
+/* ================================
+   AI ASSISTANT – CHAT LAYOUT
+================================ */
+
+.chat-container {
+    max-width: 900px;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    height: 80vh;
+}
+
+.chat-title {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+#chat-output {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
+    background: #f7f8fa;
+    border-radius: 10px;
+    scroll-behavior: smooth;
+}
+
+/* ================================
+   CHAT MESSAGES
+================================ */
+
+.chat-message {
+    display: flex;
+    margin-bottom: 12px;
+}
+
+.chat-message.user {
+    justify-content: flex-end;
+}
+
+.chat-message.bot {
+    justify-content: flex-start;
+}
+
+/* ================================
+   MESSAGE BUBBLES
+================================ */
+
+.bubble {
+    max-width: 70%;
+    padding: 12px 15px;
+    border-radius: 12px;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.user .bubble {
+    background: #007bff;
+    color: #fff;
+    border-bottom-right-radius: 0;
+}
+
+.bot .bubble {
+    background: #ffffff;
+    color: #333;
+    border-bottom-left-radius: 0;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* ================================
+   CHAT INPUT
+================================ */
+
+.chatbot {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.chatbot input {
+    flex: 1;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+.chatbot button {
+    padding: 12px 18px;
+    border-radius: 8px;
+    background: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+/* ================================
+   LOADER
+================================ */
+
+.loader {
+    display: flex;
+    justify-content: center;
+    margin: 10px;
+    min-height: 24px;
+}
+
+.hidden {
+    display: none;
+}
+
+.dot {
+    height: 8px;
+    width: 8px;
+    margin: 0 4px;
+    background: #007bff;
+    border-radius: 50%;
+    animation: bounce 1.4s infinite both;
+}
+
+.dot:nth-child(2) { animation-delay: 0.2s; }
+.dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes bounce {
+    0%, 80%, 100% { transform: scale(0); }
+    40% { transform: scale(1); }
+}
+
+/* ================================
+   MARKDOWN CONTENT (BOT ONLY)
+================================ */
+
+.chat-message.bot .bubble h2 {
+    font-size: 16px;
+    margin: 10px 0 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.chat-message.bot .bubble h3 {
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+
+.chat-message.bot .bubble p {
+    margin: 6px 0;
+}
+
+.chat-message.bot .bubble strong {
+    font-weight: 600;
+}
+
+/* ================================
+   LISTS (RESTORED BULLETS)
+================================ */
+
+.chat-message.bot .bubble ul {
+    list-style-type: disc;
+    padding-left: 20px;
+    margin: 8px 0;
+    display: block;
+}
+
+.chat-message.bot .bubble ul ul {
+    list-style-type: circle;
+    padding-left: 18px;
+    margin-top: 6px;
+}
+
+.chat-message.bot .bubble ol {
+    list-style-type: decimal;
+    padding-left: 22px;
+    margin: 8px 0;
+}
+
+.chat-message.bot .bubble li {
+    margin: 4px 0;
+    line-height: 1.6;
+}
+
+/* ================================
+   MARKDOWN TABLES
+================================ */
+
+.chat-message.bot .bubble table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 13px;
+}
+
+.chat-message.bot .bubble th,
+.chat-message.bot .bubble td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.chat-message.bot .bubble th {
+    background-color: #f1f3f5;
+    font-weight: 600;
+}
+
+.chat-message.bot .bubble tr:nth-child(even) {
+    background-color: #fafafa;
+}
