@@ -1,5 +1,6 @@
 from django.urls import path
 from budget import views
+from django.conf import settings
 
 
 urlpatterns = [
@@ -9,6 +10,11 @@ urlpatterns = [
     path('year/', views.yearly_expenses, name="year"),
     path('edit/<int:expense_id>/', views.edit_expense, name="edit"),
     path('delete/<int:expense_id>/', views.delete_expense, name="delete"),
-    path('chatbot/', views.chatbot, name="chatbot"),
-    path("chatbot/<uuid:cid>/", views.chatbot, name="chatbot_with_id"),
 ]
+
+
+if settings.AI_ENABLED:
+    urlpatterns += [
+        path("chatbot/<uuid:cid>/", views.chatbot, name="chatbot_with_id"),
+        path('chatbot/', views.chatbot, name="chatbot")
+    ]

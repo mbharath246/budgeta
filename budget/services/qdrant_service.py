@@ -4,19 +4,23 @@ from langchain_core.documents import Document
 from django.conf import settings
 import logging as logger
 
-from budget.services.embeddings import embeddings
+
+if settings.AI_ENABLED:
+    from budget.services.embeddings import embeddings
 
 
 class QdrantService:
     qdrant_api_key = settings.QDRANT_API_KEY
     qdrant_url = settings.QDRANT_URL
     collection_name = settings.QDRANT_COLLECTION
+    qdrant_client = None
 
     def __init__(self, **kwargs):    
-        self.qdrant_client: QdrantClient = self.get_qdrant_client(**kwargs)
-        self.check_or_create_collection()               
-        self.check_or_create_index('id', PayloadSchemaType.INTEGER)
-        self.check_or_create_index('user_id', PayloadSchemaType.UUID)
+        if settings.AI_ENABLED:
+            self.qdrant_client: QdrantClient = self.get_qdrant_client(**kwargs)
+            self.check_or_create_collection()               
+            self.check_or_create_index('id', PayloadSchemaType.INTEGER)
+            self.check_or_create_index('user_id', PayloadSchemaType.UUID)
 
     def get_qdrant_client(self, **kwargs):
         return QdrantClient(api_key=self.qdrant_api_key, url=self.qdrant_url, **kwargs)

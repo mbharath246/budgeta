@@ -7,7 +7,9 @@ class CohereEmbeddings(Embeddings):
     api_key = settings.COHERE_API_KEY
     model = settings.COHERE_EMBEDDINGS_MODEL
     input_type = settings.COHERE_EMBEDDINGS_INPUT_TYPE
-    cohere_client = cohere.ClientV2(api_key=api_key)
+    cohere_client = None
+    if settings.AI_ENABLED:
+        cohere_client = cohere.ClientV2(api_key=api_key)
     
     def embed_documents(self, texts: list[str]) -> list[list[float]]:
         res = self.cohere_client.embed(

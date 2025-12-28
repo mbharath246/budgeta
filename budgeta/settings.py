@@ -45,6 +45,8 @@ QDRANT_API_KEY = env('QDRANT_API_KEY', default=None)
 QDRANT_URL = env('QDRANT_URL')
 QDRANT_COLLECTION = env('QDRANT_COLLECTION')
 
+AI_ENABLED = env.bool('AI_ENABLED', default=False)
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -84,6 +86,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'budget.context_processors.global_settings',
             ],
         },
     },

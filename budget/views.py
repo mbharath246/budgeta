@@ -5,6 +5,7 @@ from datetime import datetime
 from uuid import uuid4
 from django.http import JsonResponse, StreamingHttpResponse
 import logging as logger
+from django.conf import settings
 
 from budget.forms import AddExpenseForm
 from budget.models import Expense, ChatConversations, ChatHistory
@@ -55,20 +56,23 @@ def add_expense(request):
         if form.is_valid():
             form.instance.user_id = request.user
             data = form.save()
-            payload_text = {
-                "expense name": data.name,
-                "amount": float(data.amount),
-                "category": data.category,
-                "date": data.date.strftime("%d/%m/%Y, %H:%M:%S"),
-                "description": data.description,
-                "paid_by": data.paid
-            }
-            metadata = {
-                **payload_text,
-                "user_id": request.user.id
-            }
-            print(payload_text)
-            qdrant_db.store_items(data.id, texts=[str(payload_text)], metadatas=[metadata])
+            
+            if settings.AI_ENABLED:
+                payload_text = {
+                    "expense name": data.name,
+                    "amount": float(data.amount),
+                    "category": data.category,
+                    "date": data.date.strftime("%d/%m/%Y, %H:%M:%S"),
+                    "description": data.description,
+                    "paid_by": data.paid
+                }
+                metadata = {
+                    **payload_text,
+                    "user_id": request.user.id
+                }
+                print(payload_text)
+                qdrant_db.store_items(data.id, texts=[str(payload_text)], metadatas=[metadata])
+                
             return redirect("/budget/index")
         else:
             print(form.errors)
@@ -181,20 +185,23 @@ def edit_expense(request, expense_id):
         form = AddExpenseForm(request.POST, instance=expense)
         if form.is_valid():
             data = form.save()
-            payload_text = {
-                "expense name": data.name,
-                "amount": float(data.amount),
-                "category": data.category,
-                "date": data.date.strftime("%d/%m/%Y, %H:%M:%S"),
-                "description": data.description,
-                "paid_by": data.paid
-            }
-            metadata = {
-                **payload_text,
-                "user_id": request.user.id
-            }
-            print(payload_text)
-            qdrant_db.store_items(data.id, texts=[str(payload_text)], metadatas=[metadata])
+            
+            if settings.AI_ENABLED:
+                payload_text = {
+                    "expense name": data.name,
+                    "amount": float(data.amount),
+                    "category": data.category,
+                    "date": data.date.strftime("%d/%m/%Y, %H:%M:%S"),
+                    "description": data.description,
+                    "paid_by": data.paid
+                }
+                metadata = {
+                    **payload_text,
+                    "user_id": request.user.id
+                }
+                print(payload_text)
+                qdrant_db.store_items(data.id, texts=[str(payload_text)], metadatas=[metadata])
+                
             return redirect('index')
     else:
         form = AddExpenseForm(instance=expense)
@@ -207,7 +214,10 @@ def delete_expense(request, expense_id):
     expense = get_object_or_404(Expense, id=expense_id, user_id=request.user.id)
     if request.method == "POST":
         expense.delete()
-        qdrant_db.delete_item(expense_id)
+        
+        if settings.AI_ENABLED:
+            qdrant_db.delete_item(expense_id)
+            
         return redirect('index')
     
     return render(request, 'home/delete-expense.html', {'expense': expense})
