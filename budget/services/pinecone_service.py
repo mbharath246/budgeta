@@ -1,75 +1,139 @@
-from pinecone import Pinecone, ServerlessSpec, VectorType, Metric, CloudProvider, AwsRegion
+import requests
+from budgeta import settings
 from langchain_core.documents import Document
-from django.conf import settings
 
 if settings.AI_ENABLED:
     from budget.services.embeddings import embeddings
 
 
 class PineconeService:
-    
-    def __init__(self):        
+    def __init__(self):
         self.index_name = settings.PINECONE_INDEX_NAME
-        self.payload_text: str = "text"
         self.top_k = settings.PINECONE_TOP_K
-        self.pinecone_client = self.get_pinecone_client()
-        self.index = self.get_or_create_index(self.index_name)
-    
-    def get_pinecone_client(self):
-        return Pinecone(api_key=settings.PINECONE_API_KEY)
-    
-    def get_or_create_index(self, index_name):
-        if not self.pinecone_client.has_index(index_name):
-            self.pinecone_client.create_index(
-                name=index_name,
-                vector_type=VectorType.DENSE,
-                metric=Metric.COSINE,
-                spec=ServerlessSpec(cloud=CloudProvider.AWS, region=AwsRegion.US_EAST_1),
-                dimension=embeddings.get_embeddings_dimension()
-            )
-        self.index = self.pinecone_client.Index(index_name)
-        return self.index         
-    
-    def store_items(self, doc_id, texts: list[str], metadatas: list[dict]):
-        text_embeddings = embeddings.embed_documents(texts)
-        documents = []
-        for text, embedding, metadata in zip(texts, text_embeddings, metadatas):
-            metadata[self.payload_text] = text
-            vector_tuple = (str(doc_id), embedding, metadata)
-            documents.append(vector_tuple)
-            
-        self.index.upsert(
-            vectors=documents
-        )
-        print("Added the data into Pinecone Database")
-        
-    def delete_item(self, doc_id):
-        self.index.delete([str(doc_id)])
-        print(f"Deleted the data with id {doc_id} from Pinecone Database")
-        
-        
-    def search_points(self, query, user_id):
-        search_results = self.index.query(
-            vector=embeddings.embed_query(query), 
-            top_k=20,
-            filter={
-                "user_id": {"$eq": str(user_id)}
-            },
-            include_metadata=True,
-            include_values=False
-        )
+        self.payload_text = "text"
 
-        search_results = search_results.get('matches')
-                
+        self.api_key = settings.PINECONE_API_KEY
+        self.control_plane = "https://api.pinecone.io"
+
+        self.headers = {
+            "Api-Key": self.api_key,
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "X-Pinecone-Api-Version": "2025-10",
+        }
+
+        self.index_host = self.get_or_create_index()
+
+    def get_or_create_index(self):
+        r = requests.get(
+            f"{self.control_plane}/indexes",
+            headers=self.headers,
+            timeout=10,
+        )
+        r.raise_for_status()
+
+        indexes = r.json().get("indexes", [])
+        for idx in indexes:
+            if idx["name"] == self.index_name:
+                print("index found")
+                return f"https://{idx['host']}"
+
+        payload = {
+            "name": self.index_name,
+            "dimension": embeddings.get_embeddings_dimension(),
+            "metric": "cosine",
+            "vector_type": "dense",
+            "spec": {
+                "serverless": {
+                    "cloud": "aws",
+                    "region": "us-east-1",
+                }
+            },
+        }
+        print("Index Not Found Creating!...")
+
+        r = requests.post(
+            f"{self.control_plane}/indexes",
+            headers=self.headers,
+            json=payload,
+            timeout=10,
+        )
+        r.raise_for_status()
+
+        return f"https://{r.json()['host']}"
+
+    def store_items(self, doc_id, texts: list[str], metadatas: list[dict]):
+        embeddings_list = embeddings.embed_documents(texts)
+
+        vectors = []
+        for text, vector, metadata in zip(texts, embeddings_list, metadatas):
+            metadata[self.payload_text] = text
+            vectors.append({
+                "id": str(doc_id),
+                "values": vector,
+                "metadata": metadata,
+            })
+
+        payload = {"vectors": vectors}
+
+        r = requests.post(
+            f"{self.index_host}/vectors/upsert",
+            headers=self.headers,
+            json=payload,
+            timeout=15,
+        )
+        r.raise_for_status()
+
+        print("Added data into Pinecone")
+
+    def delete_item(self, doc_id):
+        payload = {"ids": [str(doc_id)]}
+
+        r = requests.post(
+            f"{self.index_host}/vectors/delete",
+            headers=self.headers,
+            json=payload,
+            timeout=10,
+        )
+        r.raise_for_status()
+
+        print(f"Deleted vector {doc_id}")
+
+
+    def search_points(self, query: str, user_id: str):
+        vector = embeddings.embed_query(query)
+
+        payload = {
+            "vector": vector,
+            "topK": self.top_k,
+            "includeMetadata": True,
+            "includeValues": False,
+            "filter": {
+                "user_id": {"$eq": str(user_id)}
+            }
+        }
+
+        r = requests.post(
+            f"{self.index_host}/query",
+            headers=self.headers,
+            json=payload,
+            timeout=15,
+        )
+        r.raise_for_status()
+
+        matches = r.json().get("matches", [])
+
         results = []
-        for result in search_results:
-            metadata = result.get('metadata')
-            page_content = metadata.pop('text')
-            metadata["score"] = result.get('score')
-            data = Document(page_content=page_content)
-            # data = Document(page_content=page_content, metadata=metadata)
-            results.append(data)
-        
-        print(f"found chunk : {len(results)} from Pinecone Database.")
+        for match in matches:
+            metadata = match.get("metadata", {})
+            page_content = metadata.pop(self.payload_text, "")
+            metadata["score"] = match.get("score")
+
+            results.append(
+                Document(page_content=page_content)
+                # or Document(page_content=page_content, metadata=metadata)
+            )
+
+        print(f"Found {len(results)} chunks from Pinecone")
         return results
-    
+        
