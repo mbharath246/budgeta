@@ -1,8 +1,8 @@
-from qdrant_client import QdrantClient, models
 from qdrant_client.models import PayloadSchemaType
 from langchain_core.documents import Document
 from django.conf import settings
 import logging as logger
+import requests
 
 
 if settings.AI_ENABLED:
@@ -14,100 +14,132 @@ class QdrantService:
     qdrant_url = settings.QDRANT_URL
     collection_name = settings.QDRANT_COLLECTION
     qdrant_client = None
+    headers = {
+        "api-key": qdrant_api_key,
+        "Content-Type": "application/json"
+    }
 
-    def __init__(self, **kwargs):    
+    def __init__(self):    
         if settings.AI_ENABLED:
-            self.qdrant_client: QdrantClient = self.get_qdrant_client(**kwargs)
             self.check_or_create_collection()               
-            self.check_or_create_index('id', PayloadSchemaType.INTEGER)
-            self.check_or_create_index('user_id', PayloadSchemaType.UUID)
+            self.check_or_create_index('id', PayloadSchemaType.INTEGER.value)
+            self.check_or_create_index('user_id', PayloadSchemaType.UUID.value)
 
-    def get_qdrant_client(self, **kwargs):
-        return QdrantClient(api_key=self.qdrant_api_key, url=self.qdrant_url, **kwargs)
 
     def check_or_create_collection(self):
-        if not self.qdrant_client.collection_exists(self.collection_name):
-            self.qdrant_client.create_collection(
-                collection_name=self.collection_name,
-                vectors_config={
-                    "dense_vector": models.VectorParams(
-                        size=embeddings.get_embeddings_dimension(),
-                        distance=models.Distance.COSINE,
-                    )
-                },
+        r = requests.get(
+            url=self.qdrant_url + f"/collections/{self.collection_name}/exists",
+            headers=self.headers
+        )
+        response = r.json()
+        collection_exists = response.get('result', {}).get('exists')
+        if not collection_exists:
+            r = requests.put(
+                url=self.qdrant_url + f"/collections/{self.collection_name}",
+                headers=self.headers,
+                json={
+                    "vectors": {
+                        "dense_vector": {
+                        "size": embeddings.get_embeddings_dimension(),
+                        "distance": "Cosine"
+                        }
+                    }
+                }
             )
+            res = r.json()
+            print(f"Collection with name {self.collection_name} not Exists, Creating.., result: {res.get('result')}")
             logger.info(f"Collection with name {self.collection_name} not Exists, Creating..")
             return
+        else:
+            logger.info(f"Collection with name {self.collection_name} Already Exists.")
+            print(f"Collection with name {self.collection_name} Already Exists.")
+            return
 
-        logger.info(f"Collection with name {self.collection_name} Already Exists.")
-
-    def store_items(self, doc_id, texts, metadatas):
+    def store_items(self, doc_id, texts: list[str], metadatas: list[dict]):
         text_embeddings = embeddings.embed_documents(texts)
         points = []
         for embedding, text, metadata in zip(text_embeddings, texts, metadatas):
-            point = models.PointStruct(
-                id=doc_id,
-                vector={
-                    "dense_vector": embedding,
+            point = {
+                "id": doc_id,
+                "vector": {
+                    "dense_vector": embedding
                 },
-                payload={
+                "payload": {
                     "page_content": text,
                     "metadata": metadata
                 }
-            )
+            }
             points.append(point)
-            
-        self.qdrant_client.upsert(
-            collection_name=self.collection_name,
-            points=points
+
+        response = requests.put(
+            url= self.qdrant_url + f'/collections/{self.collection_name}/points?wait=true',
+            json={"points": points},
+            headers=self.headers
         )
+        print(response.json())
+        
 
     def delete_item(self, doc_id):
-        self.qdrant_client.delete(
-            collection_name=self.collection_name,
-            points_selector=[doc_id]
+        r = requests.post(
+            url=self.qdrant_url + f"/collections/{self.collection_name}/points/delete",
+            headers=self.headers,
+            json={
+                "points": [doc_id]
+            }
         )
+        res = r.json()
         logger.info(f"Expense with {doc_id} deleted successfully.")
+        print(f"Expense with {doc_id} deleted successfully. status {res.get('status')}")
 
     def check_or_create_index(self, index_name, schema: PayloadSchemaType):
-        info = self.qdrant_client.get_collection(self.collection_name)
-        if index_name not in info.payload_schema:
-            self.qdrant_client.create_payload_index(
-                collection_name=self.collection_name,
-                field_name=index_name,
-                field_schema=schema
+        url = self.qdrant_url + f"/collections/{self.collection_name}"
+        r = requests.get(
+            url=url,
+            headers=self.headers
+        )
+        response = r.json()
+        result = response.get('result', {}).get('payload_schema')
+        
+        if index_name not in result:
+            r = requests.put(
+                url=url+'/index',
+                headers=self.headers,
+                json={
+                    "field_name": index_name,
+                    "field_schema": schema
+                }
             )
-            print(f"Index created for '{index_name}'")
+            response = r.json()
+            result = response.get('result')
+            print(f"Index created for index name = {index_name} result = {result.get('status')}")
         else:
             print(f"Index already exists for '{index_name}'")
             
     def search_points(self, query, user_id, **kwargs):
-        search_results = self.qdrant_client.query_points(
-            collection_name=self.collection_name,
-            query=embeddings.embed_query(query),
-            limit=20,
-            with_payload=True,
-            with_vectors=False,
-            query_filter=models.Filter(
-                must=models.FieldCondition(
-                    key="metadata.user_id",
-                    match=models.MatchValue(
-                        value=str(user_id)
-                    )
-                )
-            ),
-            search_params=models.SearchParams(exact=True),
-            using="dense_vector",
-            **kwargs
-        ).points
+        r = requests.post(
+            url=self.qdrant_url + f"/collections/{self.collection_name}/points/query",
+            headers=self.headers,
+            json={
+                "query": embeddings.embed_query(query),
+                "limit": 20,
+                "using": "dense_vector",
+                "with_payload": True,
+                "with_vectors": False,
+                "filter.must.key": "metadata.user_id",
+                "filter.must.match.value": str(user_id),
+                "params.exact": True
+            }
+        )
+        respose = r.json()
+        search_results = respose.get('result').get('points')
         
         results = []
         for result in search_results:
-            page_content = result.payload.get('page_content')
-            metadata = result.payload.get('metadata') or {}
-            metadata["_id"] = result.id
+            page_content = result.get('payload', {}).get('page_content')
+            metadata = result.get('payload', {}).get('metadata') or {}
+            metadata["_id"] = result.get('id')
             metadata["_collection_name"] = self.collection_name
-            metadata["score"] = result.score
+            metadata["score"] = result.get('score')
             data = Document(page_content=page_content)
             # data = Document(page_content=page_content, metadata=metadata)
             results.append(data)

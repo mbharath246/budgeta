@@ -68,7 +68,7 @@ def add_expense(request):
                 }
                 metadata = {
                     **payload_text,
-                    "user_id": request.user.id
+                    "user_id": str(request.user.id)
                 }
                 print(payload_text)
                 qdrant_db.store_items(data.id, texts=[str(payload_text)], metadatas=[metadata])
@@ -197,7 +197,7 @@ def edit_expense(request, expense_id):
                 }
                 metadata = {
                     **payload_text,
-                    "user_id": request.user.id
+                    "user_id": str(request.user.id)
                 }
                 print(payload_text)
                 qdrant_db.store_items(data.id, texts=[str(payload_text)], metadatas=[metadata])
