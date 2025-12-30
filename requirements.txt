@@ -10,3 +10,4 @@ langchain
 langchain-groq
 langchain-community
 cohere
+pinecone

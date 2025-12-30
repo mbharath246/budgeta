@@ -3,13 +3,13 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Sum
 from datetime import datetime
 from uuid import uuid4
-from django.http import JsonResponse, StreamingHttpResponse
+from django.http import JsonResponse
 import logging as logger
 from django.conf import settings
 
 from budget.forms import AddExpenseForm
 from budget.models import Expense, ChatConversations, ChatHistory
-from budget.services.qdrant_service import qdrant_db
+from budget.services.vector_db import vector_db
 from budget.services.llm_client import llm
 
 
@@ -71,7 +71,7 @@ def add_expense(request):
                     "user_id": str(request.user.id)
                 }
                 print(payload_text)
-                qdrant_db.store_items(data.id, texts=[str(payload_text)], metadatas=[metadata])
+                vector_db.store_items(data.id, texts=[str(payload_text)], metadatas=[metadata])
                 
             return redirect("/budget/index")
         else:
@@ -200,7 +200,7 @@ def edit_expense(request, expense_id):
                     "user_id": str(request.user.id)
                 }
                 print(payload_text)
-                qdrant_db.store_items(data.id, texts=[str(payload_text)], metadatas=[metadata])
+                vector_db.store_items(data.id, texts=[str(payload_text)], metadatas=[metadata])
                 
             return redirect('index')
     else:
@@ -216,7 +216,7 @@ def delete_expense(request, expense_id):
         expense.delete()
         
         if settings.AI_ENABLED:
-            qdrant_db.delete_item(expense_id)
+            vector_db.delete_item(expense_id)
             
         return redirect('index')
     
@@ -245,7 +245,7 @@ def chatbot(request, cid=None):
         conversation_id = current_chat.conversation_id
         
         print(conversation_id, current_chat.create_time)
-        search_results = qdrant_db.search_points(query, user_id)
+        search_results = vector_db.search_points(query, str(user_id))
         logger.info(f"found retrieved docs {len(search_results)}")
         print(f"found retrieved docs {len(search_results)}")
         prompt = f"""

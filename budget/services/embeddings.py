@@ -1,4 +1,4 @@
-from django.conf import settings
+from budgeta import settings
 from langchain.embeddings.base import Embeddings
 import httpx
 

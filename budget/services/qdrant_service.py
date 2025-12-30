@@ -77,7 +77,7 @@ class QdrantService:
             headers=self.headers
         )
         print(response.json())
-        
+        print("Added the data into Qdrant Database")        
 
     def delete_item(self, doc_id):
         r = requests.post(
@@ -144,7 +144,7 @@ class QdrantService:
             # data = Document(page_content=page_content, metadata=metadata)
             results.append(data)
         
+        print(f"found chunk : {len(results)} from Qdrant Database.")
         return results
     
 
-qdrant_db = QdrantService()
