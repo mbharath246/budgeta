@@ -1,6 +1,7 @@
-from budgeta import settings
+from django.conf import settings
 from langchain.embeddings.base import Embeddings
 import httpx
+import time
 
 
 class CohereEmbeddings(Embeddings):
@@ -39,6 +40,7 @@ class CohereEmbeddings(Embeddings):
             except Exception as e:
                 print(f"Error While Embedding text {texts}: {e}")
 
+            time.sleep(7)
             i += 1
             
     def embed_documents(self, texts: list[str]) -> list[list[float]]:
