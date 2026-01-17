@@ -10,6 +10,7 @@ urlpatterns = [
     path('year/', views.yearly_expenses, name="year"),
     path('edit/<int:expense_id>/', views.edit_expense, name="edit"),
     path('delete/<int:expense_id>/', views.delete_expense, name="delete"),
+    path('charts/', views.charts, name="charts"),
 ]
 
 

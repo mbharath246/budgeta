@@ -16,4 +16,5 @@ build/
 *.ipynb
 .env
 .env.prod
+.env.dev
 .vscode/

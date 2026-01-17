@@ -1,0 +1,242 @@
+{% extends "home/base.html" %}
+
+{% block header %}
+    {% include "home/header.html" %}
+{% endblock  %}
+
+{% block sidebar %}
+    {% include "home/sidebar.html" %}
+{% endblock  %}
+
+{% load inr_format %}
+
+{% block content %}
+    <div>
+
+        <form method="get" class="text-center mb-3">
+            <label>Year:</label>
+            <input type="number" name="bar_year" value="{{ bar_year }}" min="2000" class="form-control d-inline w-25">
+
+            <select name="pie_month" class="form-control d-inline w-25">
+                <option value="">All Months</option>
+                {% for month in month_names %}
+                    <option value="{{ forloop.counter }}"
+                        {% if pie_month == forloop.counter|stringformat:"s" %}selected{% endif %}>
+                        {{ month }}
+                    </option>
+                {% endfor %}
+            </select>
+            <button class="btn btn-primary ms-2">Apply</button>
+        </form>
+
+        <!-- Total monthly spends in a year in barchart -->
+        <div class="card p-3 mb-3" style="height: 330px;">
+            <canvas id="monthly-chart"></canvas>
+        </div>
+
+
+        <!-- Pie charts side by side for payment type and category -->
+        <div class="card p-3 mb-3">
+            <div class="row mb-3">
+                <div class="col-md-6" style="height: 330px;">
+                    <h6 class="text-center">Payment Type</h6>
+                    <canvas id="payment-type-charts"></canvas>
+                </div>
+
+                <div class="col-md-6" style="height: 330px;">
+                    <h6 class="text-center">Category Spend</h6>
+                    <canvas id="category-charts"></canvas>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Complete selected month details -->
+        {% if selected_month %}
+            <div class="card p-3 mb-3" style="height: 330px;">
+                <h6 class="text-center">{{ selected_month }} Month Details</h6>
+                <canvas id="month-details-charts"></canvas>
+            </div>
+        {% endif %}
+
+    </div>
+    <!-- Chart.js Link -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+
+    <script>
+
+    // Generate random pastel colors (better visibility)
+    function generateColors(count) {
+        return Array.from({ length: count }, () => {
+            const r = Math.floor(Math.random() * 156 + 100);
+            const g = Math.floor(Math.random() * 156 + 100);
+            const b = Math.floor(Math.random() * 156 + 100);
+            return `rgba(${r}, ${g}, ${b}, 0.7)`;
+        });
+    }
+
+    function getMinMax(values, labels) {
+        // Filter only months where spend > 0
+        const validData = values
+            .map((value, index) => ({ value, label: labels[index] }))
+            .filter(item => item.value > 0);
+
+        // Edge case: all values are 0
+        if (!validData.length) {
+            return {
+                max: 0,
+                min: 0,
+                maxLabel: 'N/A',
+                minLabel: 'N/A'
+            };
+        }
+
+        const maxItem = validData.reduce((a, b) => b.value > a.value ? b : a);
+        const minItem = validData.reduce((a, b) => b.value < a.value ? b : a);
+
+        return {
+            max: maxItem.value,
+            min: minItem.value,
+            maxLabel: maxItem.label,
+            minLabel: minItem.label
+        };
+    }
+
+
+    function createChart(canvasId, type, labels, values, showLegend = true, showSubtitle = false) {
+        const isPie = ['pie', 'doughnut'].includes(type);
+        const colors = generateColors(values.length);
+        const minMax = showSubtitle ? getMinMax(values, labels) : null;
+
+        return new Chart(document.getElementById(canvasId), {
+            type,
+            data: {
+                labels,
+                datasets: [{
+                    data: values,
+                    backgroundColor: colors,
+                    borderColor: '#fff',
+                    borderWidth: 1,
+                    // 🔥 Force pie/doughnut size
+                    ...(isPie && { radius: '90%' })
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: showLegend,
+                        position: isPie ? 'right' : 'top'
+                    },
+                    subtitle: showSubtitle ? {
+                        display: true,
+                        text: `Max: ${minMax.maxLabel} (₹${minMax.max}) | Min: ${minMax.minLabel} (₹${minMax.min})`,
+                        font: { size: 14, weight: 'bold' }
+                    } : {}
+                },
+                layout: {
+                    padding: { top: 10, bottom: 10 }
+                }
+            }
+        });
+    }
+
+
+    const chartType = document.getElementById('chart_type')?.value || 'bar';
+
+    const monthLabels = {{ month_names|safe }};
+    const monthlySpends = {{ monthly_spends|INR }};
+
+    // Monthly Spend Chart
+    createChart(
+        'monthly-chart',
+        chartType,
+        monthLabels,
+        monthlySpends,
+        false,
+        true
+    );
+
+    const paymentLabels = {{ payment_labels|default:"[]"|safe }};
+    const paymentValues = {{ payment_values|default:"[]"|safe }};
+
+    const categoryLabels = {{ category_labels|default:"[]"|safe }};
+    const categoryValues = {{ category_values|default:"[]"|safe }};
+
+
+    function showNoDataMessage(canvasId, message) {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) return;
+
+        canvas.style.display = 'none';
+
+        const msg = document.createElement('div');
+        msg.innerText = message;
+        msg.style.textAlign = 'center';
+        msg.style.padding = '40px';
+        msg.style.color = '#666';
+        msg.style.fontSize = '14px';
+        msg.style.fontWeight = '500';
+
+        canvas.parentNode.appendChild(msg);
+    }
+
+
+    if (paymentLabels.length && paymentValues.length) {
+        // Payment Type Pie Chart
+        createChart(
+            'payment-type-charts',
+            'pie',
+            paymentLabels,
+            paymentValues,
+            true
+        );
+        
+        // Category Doughnut Chart
+        createChart(
+            'category-charts',
+            'doughnut',
+            categoryLabels,
+            categoryValues,
+            true
+        );
+    } else {
+        showNoDataMessage(
+            'payment-type-charts',
+            'No payment data available'
+        );
+        showNoDataMessage(
+            'category-charts',
+            'No category data available'
+        );
+    }
+
+
+
+    const detailLabels = {{ monthly_detail_labels|default:"[]"|safe }};
+    const detailValues = {{ monthly_detail_values|default:"[]"|safe }};
+    var selected_month = "{{ selected_month|safe }}"
+
+    if (detailLabels.length && detailValues.length) {
+        // Detailed monthly chart
+        createChart(
+            'month-details-charts',
+            chartType,
+            detailLabels,
+            detailValues,
+            false,
+            true
+        );
+    } else {
+        showNoDataMessage(
+            'month-details-charts',
+            `${selected_month} No data available`
+        );
+    }
+    </script>
+
+        
+
+{% endblock %}

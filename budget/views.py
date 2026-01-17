@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Sum
+from django.db.models.functions import ExtractMonth
 from datetime import datetime
 from uuid import uuid4
 from django.http import JsonResponse
@@ -12,6 +13,18 @@ from budget.models import Expense, ChatConversations, ChatHistory
 from budget.services.vector_db import vector_db
 from budget.services.llm_client import llm
 
+
+month_names = {
+    "1": "January", "2": "February", "3": "March",
+    "4": "April", "5": "May", "6": "June",
+    "7": "July", "8": "August", "9": "September",
+    "10": "October", "11": "November", "12": "December"
+}
+monthly_summary = {
+    "January": 0, "February": 0, "March": 0, "April": 0,
+    "May": 0, "June": 0, "July": 0, "August": 0, "September": 0,
+    "October": 0, "November": 0, "December": 0
+}
 
 @login_required(login_url="/users/login/")
 def home_view(request):
@@ -151,25 +164,14 @@ def yearly_expenses(request):
         .annotate(total_amount=Sum('amount'))
         .order_by('date__month')
     )
-
-    month_names = {
-        "1": "January", "2": "February", "3": "March",
-        "4": "April", "5": "May", "6": "June",
-        "7": "July", "8": "August", "9": "September",
-        "10": "October", "11": "November", "12": "December"
-    }
-    monthly_summary = {
-        "January": 0, "February": 0, "March": 0, "April": 0,
-        "May": 0, "June": 0, "July": 0, "August": 0, "September": 0,
-        "October": 0, "November": 0, "December": 0
-    }
+    current_monthly_expenses = monthly_summary.copy()
     amount = float()
     for item in monthly_expenses:
-        monthly_summary[month_names[str(item['date__month'])]] = item['total_amount']
+        current_monthly_expenses[month_names[str(item['date__month'])]] = item['total_amount']
         amount += float(item["total_amount"])
    
     context = {
-        'monthly_summary': monthly_summary,
+        'monthly_summary': current_monthly_expenses,
         'selected_year': selected_year,
         'amount': amount,
         "active_link": "yearly-expenses",
@@ -221,6 +223,100 @@ def delete_expense(request, expense_id):
         return redirect('index')
     
     return render(request, 'home/delete-expense.html', {'expense': expense})
+
+
+@login_required(login_url="/users/login/")
+def charts(request):
+    bar_year = int(request.GET.get("bar_year", datetime.now().year))
+    chart_type = request.GET.get('chart_type', 'bar')
+    pie_month = request.GET.get("pie_month")
+    user_id = request.user.id
+    
+    context = {
+        "active_link": "charts",
+        "chart_type": chart_type,
+        "bar_year": bar_year,
+        "month_names": list(monthly_summary.keys())
+    }
+    
+    monthly_data = (
+        Expense.objects
+        .filter(date__year=bar_year, user_id=user_id)
+        .annotate(month=ExtractMonth("date"))
+        .values("month")
+        .annotate(total=Sum("amount"))
+    )
+
+    monthly_spends = [0] * 12  # Jan to Dec
+
+    for item in monthly_data:
+        monthly_spends[item["month"] - 1] = float(item["total"])
+
+        
+    context["monthly_spends"] = monthly_spends
+
+    filters = {
+        "date__year": bar_year,
+        "user_id": user_id
+    }
+
+    if pie_month:
+        filters["date__month"] = int(pie_month)
+
+    payment_type_data = (
+        Expense.objects
+        .filter(**filters)
+        .values("paid")
+        .annotate(total=Sum("amount"))
+        .order_by("-total")
+    )
+    payment_labels = [item["paid"] for item in payment_type_data]
+    payment_values = [float(item["total"]) for item in payment_type_data]
+
+    category_data = (
+        Expense.objects
+        .filter(**filters)
+        .values("category")
+        .annotate(total=Sum("amount"))
+        .order_by("-total")
+    )
+    category_labels = [item["category"] for item in category_data]
+    category_values = [float(item["total"]) for item in category_data]
+    
+    context["pie_month"] = pie_month
+    context["payment_labels"] = payment_labels
+    context["payment_values"] = payment_values
+    context["category_labels"] = category_labels
+    context["category_values"] = category_values
+    
+    
+    monthly_detail_labels = []
+    monthly_detail_values = []
+
+    if pie_month:
+        monthly_expenses = (
+            Expense.objects
+            .filter(
+                date__year=bar_year,
+                date__month=int(pie_month),
+                user_id=request.user
+            )
+            .order_by("date")
+        )
+
+        monthly_detail_labels = [
+            f"{exp.name}" for exp in monthly_expenses
+        ]
+
+        monthly_detail_values = [
+            float(exp.amount) for exp in monthly_expenses
+        ]
+        context["monthly_detail_labels"] = monthly_detail_labels
+        context["monthly_detail_values"] = monthly_detail_values
+        context["selected_month"] = list(monthly_summary.keys())[int(pie_month) - 1]
+
+    
+    return render(request, 'home/charts.html', context)
 
 
 @login_required(login_url="/users/login")
