@@ -111,9 +111,43 @@ span.success {
     width: 300px;
 }
 
+/* Google Signin */
+.google-login-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 10px 20px;
+    background-color: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    text-decoration: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: #111827;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.08);
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    width: 300px;
+    margin-top: 10px;
+}
+
+/* Google Icon */
+.google-login-btn .google-icon {
+    flex-shrink: 0;
+    height: 16px;
+    
+}
+
+/* Hover effect */
+.google-login-btn:hover {
+    background-color: #bebebf;
+}
+
 
 @media (max-width:420px){
-    body form{
+    body form, .google-login-btn {
         max-width: 300px;
         font-size: 14px;
     }   
@@ -123,6 +157,10 @@ span.success {
        form input[type='submit']{
            width: 100px;
        }
+        .google-login-btn{
+            width: 200px;
+            font-size: 12px;
+        }
        form #uname, form #pwd, form #email, form #phone{
            width: 250px;
        }

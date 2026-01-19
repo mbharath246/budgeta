@@ -1,6 +1,7 @@
 {% extends "users/base.html" %}
 {% block content %}
 {% load static %}
+{% load socialaccount %}
 
 <head>
     <title>Login</title>
@@ -43,6 +44,15 @@
         <span class="success"></span>
         <input type="submit" value="Login">
         <p>Don't have an account? <a href="/users/signup">&nbsp; Register</a></p>
+        <a href="{% provider_login_url 'google' %}" class="google-login-btn">
+            <svg class="google-icon" width="24" height="24" viewBox="0 0 533.5 544.3" xmlns="http://www.w3.org/2000/svg">
+                <path fill="#4285F4" d="M533.5 278.4c0-18.5-1.5-37-4.6-54.8H272v103.7h146.9c-6.4 34.8-25.4 64.3-54.1 84.1v69h87.4c51.3-47.3 80.3-116.7 80.3-201z"/>
+                <path fill="#34A853" d="M272 544.3c73.5 0 135.3-24.3 180.4-66.1l-87.4-69c-24.3 16.3-55.6 26-93 26-71.4 0-132.1-48.1-153.9-112.6h-90v70.7C74.1 482.5 169.8 544.3 272 544.3z"/>
+                <path fill="#FBBC05" d="M118.1 327.5c-5.8-17.3-9.1-35.7-9.1-54.5 0-18.8 3.3-37.2 9.1-54.5v-70.7h-90C9.3 207.5 0 241 0 273c0 31.8 9.3 65.3 28.1 93.7l90-70.7z"/>
+                <path fill="#EA4335" d="M272 107.8c39.1 0 74.2 13.5 101.9 40.1l76.4-76.4C383.9 24.3 322 0 272 0 169.8 0 74.1 61.8 28.1 154.6l90 70.7C139.9 156 200.6 107.8 272 107.8z"/>
+            </svg>
+            <span>Continue with Google</span>
+        </a>
     </form>
 </main>
 
